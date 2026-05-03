@@ -1,0 +1,35 @@
+# ── Python ──
+*.py[cod]
+__pycache__/
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Virtual Environment ──
+env/
+venv/
+.venv/
+
+# ── Django ──
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+
+# ── Environment Variables ──
+.env
+.env.local
+.env.production
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db

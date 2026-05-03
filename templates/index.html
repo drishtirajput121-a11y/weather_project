@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard — Live Weather, Forecast & Air Quality</title>
+    <meta name="description"
+        content="Real-time weather dashboard with 5-day forecast, air quality index, interactive maps, and historical data powered by Django REST Framework." />
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤</text></svg>" />
+</head>
+
+<body>
+
+    <!-- ═══ Loading Overlay ═══ -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- ═══ Toast Notification ═══ -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ═══ Navigation Bar ═══ -->
+    <nav class="navbar">
+        <a href="/" class="navbar__brand">
+            <span>Weather Dashboard</span>
+        </a>
+
+        <ul class="navbar__nav">
+            <li><a href="#" class="navbar__link navbar__link--active">Weather</a></li>
+            <li><a href="#forecast-section" class="navbar__link">Forecast</a></li>
+            <li><a href="#hourly-section" class="navbar__link">Hourly</a></li>
+
+        </ul>
+
+        <div class="navbar__search">
+            <input type="text" id="search-city" class="search-input" placeholder="Search for location" value="Delhi"
+                autocomplete="off" />
+            <button id="search-btn" class="search-btn" aria-label="Search">→</button>
+        </div>
+
+        <div class="navbar__city-display" id="nav-city-display">
+            <span>Loading...</span>
+        </div>
+    </nav>
+
+    <!-- ═══ Main Content ═══ -->
+    <main class="main-content">
+
+        <!-- ── Hero: Current Weather + Map ── -->
+        <section class="hero" id="hero-section">
+            <article class="weather-card animate-in" id="current-weather">
+                <!-- Populated dynamically by app.js -->
+                <div class="current-header">
+                    <span class="current-header__label">Current weather</span>
+                </div>
+                <div class="current-main" style="padding: 3rem 0;">
+                    <div class="skeleton" style="width: 80px; height: 80px;"></div>
+                    <div>
+                        <div class="skeleton" style="width: 120px; height: 48px;"></div>
+                    </div>
+                </div>
+                <div class="metrics-row">
+                    <div class="skeleton" style="width: 100px; height: 36px;"></div>
+                    <div class="skeleton" style="width: 100px; height: 36px;"></div>
+                    <div class="skeleton" style="width: 100px; height: 36px;"></div>
+                </div>
+            </article>
+
+            <div class="map-card animate-in">
+                <div class="map-card__header">
+                    <span class="map-card__title"> Weather Map</span>
+                </div>
+                <div id="weather-map"></div>
+            </div>
+        </section>
+
+        <!-- ── Tab Bar ── -->
+        <div class="tabs animate-in">
+            <button class="tab-btn tab-btn--active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="hourly">Hourly</button>
+            <button class="tab-btn" data-tab="wind">Wind</button>
+            <button class="tab-btn" data-tab="humidity">Humidity</button>
+        </div>
+
+        <!-- ── Tab Content: Overview (Forecast Cards) ── -->
+        <div id="tab-overview" class="tab-content">
+            <!-- 5-Day Forecast Row -->
+            <section id="forecast-section">
+                <div class="forecast-row" id="forecast-row">
+                    <!-- Skeleton cards -->
+                    <div class="forecast-day skeleton" style="min-width:110px; height:160px;"></div>
+                    <div class="forecast-day skeleton" style="min-width:110px; height:160px;"></div>
+                    <div class="forecast-day skeleton" style="min-width:110px; height:160px;"></div>
+                    <div class="forecast-day skeleton" style="min-width:110px; height:160px;"></div>
+                    <div class="forecast-day skeleton" style="min-width:110px; height:160px;"></div>
+                </div>
+            </section>
+
+            <!-- Overview Chart -->
+            <section class="chart-section animate-in" id="hourly-section">
+                <div class="chart-section__header">
+                    <h2 class="chart-section__title">Temperature Overview</h2>
+                    <div class="chart-section__toggle">
+                        <span>Feels like</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="hourly-chart"></canvas>
+                </div>
+                <div class="hourly-grid" id="hourly-items">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ── Tab Content: Hourly ── -->
+        <div id="tab-hourly" class="tab-content" style="display:none;">
+            <section class="chart-section">
+                <div class="chart-section__header">
+                    <h2 class="chart-section__title">Hourly Breakdown</h2>
+                </div>
+                <div class="hourly-grid" id="hourly-items-tab">
+                    <!-- Will be mirrored from overview -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ── Tab Content: Wind ── -->
+        <div id="tab-wind" class="tab-content" style="display:none;">
+            <section class="chart-section">
+                <div class="chart-section__header">
+                    <h2 class="chart-section__title">Wind Speed Forecast</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="wind-chart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <!-- ── Tab Content: Humidity ── -->
+        <div id="tab-humidity" class="tab-content" style="display:none;">
+            <section class="chart-section">
+                <div class="chart-section__header">
+                    <h2 class="chart-section__title">Humidity Forecast</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="humidity-chart"></canvas>
+                </div>
+            </section>
+        </div>
+
+
+
+    </main>
+
+    <!-- ═══ Footer ═══ -->
+    <div class="footer">
+        <footer class="blog-footer">
+            <p>Weather app built with 💛 by <a href="https://www.linkedin.com/in/drishti-rajput-181790316/">Drishti
+                    Rajput</a></p>
+
+        </footer>
+    </div>
+
+
+    <!-- ═══ Scripts ═══ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="{% static 'js/app.js' %}"></script>
+
+</body>
+
+</html>
