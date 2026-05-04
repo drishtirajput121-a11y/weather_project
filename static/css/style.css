@@ -47,9 +47,9 @@
     --font-primary:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-display:   'Outfit', 'Inter', sans-serif;
 
-    --transition-fast:   0.1s ease;
-    --transition-normal: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow:   0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast:   120ms cubic-bezier(0.2, 0, 0, 1);
+    --transition-normal: 200ms cubic-bezier(0.2, 0, 0, 1);
+    --transition-slow:   300ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* ── Reset & Base ── */
@@ -127,7 +127,7 @@ body {
     font-weight: 500;
     padding: 0.375rem 0.75rem;
     border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .navbar__link:hover,
@@ -152,7 +152,7 @@ body {
     font-size: 0.875rem;
     font-family: var(--font-primary);
     outline: none;
-    transition: all var(--transition-normal);
+    transition: border-color var(--transition-normal), background-color var(--transition-normal), box-shadow var(--transition-normal), width var(--transition-normal);
 }
 
 .search-input:focus {
@@ -186,7 +186,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 0.8rem;
-    transition: all var(--transition-fast);
+    transition: opacity var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
     opacity: 0;
     transform: scale(0.8);
 }
@@ -238,7 +238,7 @@ body {
     padding: 2rem;
     backdrop-filter: blur(12px);
     box-shadow: var(--shadow-card);
-    transition: all var(--transition-normal);
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-normal);
     position: relative;
     overflow: hidden;
 }
@@ -357,7 +357,7 @@ body {
     border-radius: var(--radius-md);
     font-size: 0.8rem;
     color: var(--text-secondary);
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .metric-chip:hover {
@@ -443,7 +443,7 @@ body {
     border-radius: var(--radius-md);
     cursor: pointer;
     white-space: nowrap;
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .tab-btn:hover {
@@ -476,7 +476,7 @@ body {
     border-radius: var(--radius-lg);
     text-align: center;
     cursor: pointer;
-    transition: all var(--transition-normal);
+    transition: border-color var(--transition-normal), transform var(--transition-normal), box-shadow var(--transition-normal);
     scroll-snap-align: start;
     backdrop-filter: blur(12px);
 }
@@ -574,7 +574,7 @@ body {
     background: rgba(255, 255, 255, 0.03);
     border-radius: var(--radius-md);
     border: 1px solid transparent;
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .hourly-item:hover {
@@ -721,7 +721,7 @@ body {
     z-index: 3000;
     transform: translateY(100px);
     opacity: 0;
-    transition: all var(--transition-normal);
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
 }
 
 .toast--visible {
@@ -781,7 +781,7 @@ body {
 
 /* ── Animations ── */
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -791,10 +791,11 @@ body {
 }
 
 .animate-in {
-    animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    will-change: transform, opacity;
 }
 
-.animate-in:nth-child(2) { animation-delay: 0.1s; }
-.animate-in:nth-child(3) { animation-delay: 0.2s; }
-.animate-in:nth-child(4) { animation-delay: 0.3s; }
-.animate-in:nth-child(5) { animation-delay: 0.4s; }
+.animate-in:nth-child(2) { animation-delay: 50ms; }
+.animate-in:nth-child(3) { animation-delay: 100ms; }
+.animate-in:nth-child(4) { animation-delay: 150ms; }
+.animate-in:nth-child(5) { animation-delay: 200ms; }

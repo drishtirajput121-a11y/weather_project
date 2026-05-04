@@ -7,6 +7,8 @@ import { $, $$, iconURL, capitalize, calculateDewPoint, getWindDir, getSummaryTe
 // ── State ──
 export let currentCity = 'Delhi';
 let hourlyChart = null;
+let windChart = null;
+let humidityChart = null;
 let weatherMap = null;
 
 export function setCurrentCity(city) {
@@ -255,9 +257,10 @@ export function renderHourlyChart(data) {
 
 function renderHourlyItems(items) {
     const container = $('#hourly-items');
-    if (!container) return;
+    const containerTab = $('#hourly-items-tab');
+    if (!container && !containerTab) return;
 
-    container.innerHTML = items
+    const html = items
         .map((item, i) => {
             const d = new Date(item.dt * 1000);
             const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -272,6 +275,78 @@ function renderHourlyItems(items) {
             `;
         })
         .join('');
+
+    if (container) container.innerHTML = html;
+    if (containerTab) containerTab.innerHTML = html;
+}
+
+// ── Render Wind Chart ──
+export function renderWindChart(data) {
+    const ctx = document.getElementById('wind-chart');
+    if (!ctx || !data.list) return;
+
+    const next24 = data.list.slice(0, 8);
+    const labels = next24.map((item) => {
+        const d = new Date(item.dt * 1000);
+        return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    });
+    const winds = next24.map((item) => item.wind.speed);
+
+    if (windChart) windChart.destroy();
+
+    windChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Wind Speed km/h',
+                    data: winds,
+                    backgroundColor: 'rgba(74, 158, 255, 0.4)',
+                    borderColor: '#4a9eff',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                },
+            ],
+        },
+        options: chartOptions(' km/h'),
+    });
+}
+
+// ── Render Humidity Chart ──
+export function renderHumidityChart(data) {
+    const ctx = document.getElementById('humidity-chart');
+    if (!ctx || !data.list) return;
+
+    const next24 = data.list.slice(0, 8);
+    const labels = next24.map((item) => {
+        const d = new Date(item.dt * 1000);
+        return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    });
+    const humidity = next24.map((item) => item.main.humidity);
+
+    if (humidityChart) humidityChart.destroy();
+
+    humidityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Humidity %',
+                    data: humidity,
+                    borderColor: '#10b981',
+                    backgroundColor: createGradient(ctx, '#10b981', 'rgba(16,185,129,0.05)'),
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#10b981',
+                    pointRadius: 3,
+                },
+            ],
+        },
+        options: chartOptions('%'),
+    });
 }
 
 // ── Map ──

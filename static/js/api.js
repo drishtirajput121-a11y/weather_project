@@ -9,6 +9,8 @@ import {
     initMap, 
     renderForecast, 
     renderHourlyChart, 
+    renderWindChart,
+    renderHumidityChart,
     renderAQI, 
     showLoading, 
     showToast 
@@ -42,6 +44,8 @@ export async function fetchAllData(city) {
         if (forecast.status === 'fulfilled' && forecast.value && !forecast.value.error) {
             renderForecast(forecast.value);
             renderHourlyChart(forecast.value);
+            renderWindChart(forecast.value);
+            renderHumidityChart(forecast.value);
         }
 
         if (aqi.status === 'fulfilled' && aqi.value && !aqi.value.error) {
