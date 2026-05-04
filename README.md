@@ -42,7 +42,7 @@ The frontend logic is divided into specialized modules to ensure maintainability
 ## Local Setup
 
 1. Clone the repository:
-   git clone https://github.com/yourusername/weather-dashboard.git
+   git clone https://github.com/drishtirajput121-a11y/weather_project
 
 2. Create and activate a virtual environment:
    python -m venv env
